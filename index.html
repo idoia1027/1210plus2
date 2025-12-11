@@ -46,6 +46,10 @@
       from { opacity: 0; transform: scale(0.95); }
       to { opacity: 1; transform: scale(1); }
     }
+    .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    .slide-up { animation: slideUp 0.3s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
@@ -54,47 +58,33 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
 
-    // ==== 图标组件库 ====
+    // ==== 图标组件库 (合并了新老版本) ====
     const Icons = {
-      Play: (props) => (
-        <svg viewBox="0 0 24 24" fill="currentColor" {...props}><polygon points="5 3 19 12 5 21 5 3" /></svg>
-      ),
-      PlayOutline: (props) => (
-         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="5 3 19 12 5 21 5 3" /></svg>
-      ),
-      Search: (props) => (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
-      ),
-      XLogo: (props) => (
-        <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
-      ),
-      ChevronDown: (props) => (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="6 9 12 15 18 9" /></svg>
-      ),
-      ChevronUp: (props) => (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="18 15 12 9 6 15" /></svg>
-      ),
-      Radar: (props) => (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-      ),
-      Translate: (props) => (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
-      ),
-      Book: (props) => (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-      ),
-      Check: (props) => (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="20 6 9 17 4 12" /></svg>
-      ),
+      Play: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><polygon points="5 3 19 12 5 21 5 3" /></svg>,
+      PlayOutline: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="5 3 19 12 5 21 5 3" /></svg>,
+      Search: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>,
+      XLogo: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>,
+      ChevronDown: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="6 9 12 15 18 9" /></svg>,
+      ChevronUp: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="18 15 12 9 6 15" /></svg>,
+      Radar: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>,
+      Translate: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>,
+      Book: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>,
+      Check: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polyline points="20 6 9 17 4 12" /></svg>,
       Close: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>,
       Share: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>,
       Download: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>,
       Quote: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H15.017C14.4647 8 14.017 7.55228 14.017 7V3H19.017C20.6739 3 22.017 4.34315 22.017 6V15C22.017 16.6569 20.6739 18 19.017 18H17.017V21H14.017ZM5.0166 21L5.0166 18C5.0166 16.8954 5.91203 16 7.0166 16H10.0166C10.5689 16 11.0166 15.5523 11.0166 15V9C11.0166 8.44772 10.5689 8 10.0166 8H6.0166C5.46432 8 5.0166 7.55228 5.0166 7V3H10.0166C11.6735 3 13.0166 4.34315 13.0166 6V15C13.0166 16.6569 11.6735 18 10.0166 18H8.0166V21H5.0166Z" /></svg>,
-      // 新增 Notion 图标 (使用一个类似文件的图标代替)
-      Notion: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M4 4c0-1.1.9-2 2-2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4zm3 3v10h2V7H7zm4 0v10h2V7h-2zm4 0v10h2V7h-2z"/></svg>
+      Notion: (props) => <svg viewBox="0 0 24 24" fill="currentColor" {...props}><path d="M4 4c0-1.1.9-2 2-2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4zm3 3v10h2V7H7zm4 0v10h2V7h-2zm4 0v10h2V7h-2z"/></svg>,
+      // Added from old version for Profile page
+      User: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+      History: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 12"/></svg>,
+      Bell: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>,
+      Plus: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
+      PenTool: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>,
+      X: (props) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     };
 
-    // ==== 数据层 (保持原样) ====
+    // ==== 数据层 ====
     const SAMPLE_HOME = {
       x_updates: [
         {
@@ -103,12 +93,9 @@
           handle: "@karpathy",
           avatar: "https://picsum.photos/seed/karpathy/80/80",
           date: "Dec 8",
-          summary_cn:
-            "不要把 LLM 视为实体，应视为“模拟器”。问“如果是某类人会怎么说”比问“你怎么看”更有效。",
-          summary_en:
-            "Don't treat LLMs as entities but as simulators. Ask 'What would [group] say?' instead of 'What do you think?'.",
-          original_text:
-            "Don't think of LLMs as entities but as simulators. For example, when exploring a topic, don't ask 'What do you think about xyz?' There is no 'you'. Next time try: 'What would be a good group of people to explore xyz? What would they say?'",
+          summary_cn: "不要把 LLM 视为实体，应视为“模拟器”。问“如果是某类人会怎么说”比问“你怎么看”更有效。",
+          summary_en: "Don't treat LLMs as entities but as simulators. Ask 'What would [group] say?' instead of 'What do you think?'.",
+          original_text: "Don't think of LLMs as entities but as simulators. For example, when exploring a topic, don't ask 'What do you think about xyz?' There is no 'you'. Next time try: 'What would be a good group of people to explore xyz? What would they say?'",
           url: "https://x.com/karpathy",
           has_image: false,
         },
@@ -118,12 +105,9 @@
           handle: "@ylecun",
           avatar: "https://picsum.photos/seed/ylecun/80/80",
           date: "2h ago",
-          summary_cn:
-            "生成式 AI 需向“世界模型”进化。目前 LLM 仅预测下一个 Token，缺乏对物理因果的理解。",
-          summary_en:
-            "Generative AI needs to evolve into World Models. Current LLMs lack physical causality understanding.",
-          original_text:
-            "Auto-Regressive LLMs are cool but they are not the destination. To reach human-level AI, we need systems that can reason, plan, and understand the physical world through World Models.",
+          summary_cn: "生成式 AI 需向“世界模型”进化。目前 LLM 仅预测下一个 Token，缺乏对物理因果的理解。",
+          summary_en: "Generative AI needs to evolve into World Models. Current LLMs lack physical causality understanding.",
+          original_text: "Auto-Regressive LLMs are cool but they are not the destination. To reach human-level AI, we need systems that can reason, plan, and understand the physical world through World Models.",
           url: "https://x.com/ylecun",
           has_image: false,
         },
@@ -164,118 +148,69 @@
         },
       ],
       daily_picks: [
-        {
-          id: 201,
-          title: "How the Economic Machine Works",
-          author: "Ray Dalio",
-          cover: "https://picsum.photos/seed/finance/600/400",
-        },
-        {
-          id: 202,
-          title: "Visualizing Neural Networks",
-          author: "3Blue1Brown",
-          cover: "https://picsum.photos/seed/nn/600/400",
-        },
-        {
-          id: 203,
-          title: "The Future of AI Agents",
-          author: "Lex Fridman",
-          cover: "https://picsum.photos/seed/agent/600/400",
-        },
+        { id: 201, title: "How the Economic Machine Works", author: "Ray Dalio", cover: "https://picsum.photos/seed/finance/600/400" },
+        { id: 202, title: "Visualizing Neural Networks", author: "3Blue1Brown", cover: "https://picsum.photos/seed/nn/600/400" },
+        { id: 203, title: "The Future of AI Agents", author: "Lex Fridman", cover: "https://picsum.photos/seed/agent/600/400" },
       ],
     };
+
+    // ==== 个人中心数据 (新增) ====
+    const SAMPLE_USER_DATA = {
+        user: { name: "Felix", days: 12, notes_count: 45 },
+        history: [
+            { id: 1, title: "AI Prompt Engineering in 2025", author: "Sander Schulhoff", date: "2小时前", cover: "https://picsum.photos/seed/ai2025/600/400" },
+            { id: 2, title: "Financial Markets 101", author: "Ray Dalio", date: "昨天", cover: "https://picsum.photos/seed/finance/600/400" },
+            { id: 3, title: "Next.js Full Course", author: "Web Dev Simplified", date: "3天前", cover: "https://picsum.photos/seed/tech/600/400" }
+        ],
+        notes: [
+            { id: 1, title: "AI Prompt Engineering 笔记", video: "AI Prompt Engineering in 2025", date: "2024/02/20", snippet: "- Few-shot 真的很重要，尤其是处理复杂逻辑时。\n- Context context context! 永远不要忘记给背景。" }
+        ],
+        default_subscriptions: [
+            { id: 101, name: "Sander Schulhoff", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sander", desc: "AI Research & Prompting" },
+            { id: 102, name: "Web Dev Simplified", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Web", desc: "Frontend Development" }
+        ]
+    };
+
+    const RECOMMENDED_CHANNELS = [
+        { id: 201, name: "Lex Fridman", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Lex", desc: "Deep Conversations" },
+        { id: 202, name: "MKBHD", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=MKBHD", desc: "Tech Reviews" },
+        { id: 203, name: "3Blue1Brown", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=3B1B", desc: "Math Visualization" },
+        { id: 204, name: "OpenAI", avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=OpenAI", desc: "Official AI Updates" }
+    ];
+
 
     // ==== 详情页数据 ====
     const SAMPLE_DETAIL_PRO = {
       overview: {
-        en:
-          'This talk explains why prompt engineering is not dead but has ' +
-          'evolved into "Artificial Social Intelligence" — a way of talking to models that makes their reasoning more reliable.',
-        cn:
-          "本次内容强调：提示工程并没有过时，而是进化成一种“人工社交智能”——通过更符合人际沟通的方式与模型对话，让输出更稳定、更可控。",
+        en: 'This talk explains why prompt engineering is not dead but has evolved into "Artificial Social Intelligence" — a way of talking to models that makes their reasoning more reliable.',
+        cn: "本次内容强调：提示工程并没有过时，而是进化成一种“人工社交智能”——通过更符合人际沟通的方式与模型对话，让输出更稳定、更可控。",
       },
       timeline: [
-        {
-          time: "00:00",
-          en: "Why prompt engineering still matters in 2025",
-          cn: "为什么在 2025 年提示工程依然重要",
-        },
-        {
-          time: "06:24",
-          en: "Artificial Social Intelligence as a new framing",
-          cn: "将提示工程视为“人工社交智能”",
-        },
-        {
-          time: "12:24",
-          en: "Few-shot prompting and the power of examples",
-          cn: "少样本提示：示例比规则更重要",
-        },
-        {
-          time: "25:03",
-          en: "Decomposition + self-critique as a pattern",
-          cn: "任务拆解 + 自我校对的组合拳",
-        },
+        { time: "00:00", en: "Why prompt engineering still matters in 2025", cn: "为什么在 2025 年提示工程依然重要" },
+        { time: "06:24", en: "Artificial Social Intelligence as a new framing", cn: "将提示工程视为“人工社交智能”" },
+        { time: "12:24", en: "Few-shot prompting and the power of examples", cn: "少样本提示：示例比规则更重要" },
+        { time: "25:03", en: "Decomposition + self-critique as a pattern", cn: "任务拆解 + 自我校对的组合拳" },
       ],
       deepDive: [
-        {
-          label: "Few-shot · 什么时候用",
-          text:
-            "当任务规则难以精确描述（例如“这类表达是否自然”、风格模仿），或者零样本输出不稳定时，用少量高质量示例给模型“示范”正确答案。",
-        },
-        {
-          label: "Few-shot · 怎么选例子",
-          text:
-            "优先选择边界案例和反例，而不是随手挑 10 个普通样本。3–5 个有代表性的例子往往比 10 个普通例子更有效。",
-        },
-        {
-          label: "Few-shot · 如何组织格式",
-          text:
-            "用结构化包裹，例如 JSON / XML：包含 input、ideal_output 和可选 rationale 字段，既方便维护，又能触发更稳定的思维链。",
-        },
+        { label: "Few-shot · 什么时候用", text: "当任务规则难以精确描述（例如“这类表达是否自然”、风格模仿），或者零样本输出不稳定时，用少量高质量示例给模型“示范”正确答案。" },
+        { label: "Few-shot · 怎么选例子", text: "优先选择边界案例和反例，而不是随手挑 10 个普通样本。3–5 个有代表性的例子往往比 10 个普通例子更有效。" },
+        { label: "Few-shot · 如何组织格式", text: "用结构化包裹，例如 JSON / XML：包含 input、ideal_output 和可选 rationale 字段，既方便维护，又能触发更稳定的思维链。" },
       ],
       english: {
         coreTakeaways: [
-          {
-            en: "Prompt engineering is effectively Artificial Social Intelligence.",
-            cn: "提示工程本质上是一种“人工社交智能”。",
-          },
-          {
-            en: "Few-shot examples are the single most powerful lever for accuracy.",
-            cn: "少样本示例是提升准确率的最强杠杆。",
-          },
-          {
-            en: "You can patch a bug — not a brain.",
-            cn: "你可以修补代码漏洞，但很难“修补”人的思维方式。",
-          },
+          { en: "Prompt engineering is effectively Artificial Social Intelligence.", cn: "提示工程本质上是一种“人工社交智能”。" },
+          { en: "Few-shot examples are the single most powerful lever for accuracy.", cn: "少样本示例是提升准确率的最强杠杆。" },
+          { en: "You can patch a bug — not a brain.", cn: "你可以修补代码漏洞，但很难“修补”人的思维方式。" },
         ],
         keywords: [
-          {
-            word: "Few-shot prompting",
-            en:
-              "Teaching the model with a handful of input–output examples instead of pure instructions.",
-            cn: "少样本提示：用少量示范样本而不是纯说明文字来教模型做事。",
-          },
-          {
-            word: "Decomposition",
-            en: "Breaking a complex task into smaller steps that are easier to solve.",
-            cn: "任务分解：把复杂任务拆成更容易解决的小步骤。",
-          },
-          {
-            word: "Self-critique",
-            en: "Letting the model review and improve its own answer.",
-            cn: "自我批评：让模型先给出答案，再自己做一次审稿和改写。",
-          },
+          { word: "Few-shot prompting", en: "Teaching the model with a handful of input–output examples instead of pure instructions.", cn: "少样本提示：用少量示范样本而不是纯说明文字来教模型做事。" },
+          { word: "Decomposition", en: "Breaking a complex task into smaller steps that are easier to solve.", cn: "任务分解：把复杂任务拆成更容易解决的小步骤。" },
+          { word: "Self-critique", en: "Letting the model review and improve its own answer.", cn: "自我批评：让模型先给出答案，再自己做一次审稿和改写。" },
         ],
       },
       phraseDrill: [
-        {
-          en: "Treat the model like a collaborator, not a vending machine.",
-          cn: "把模型当合作伙伴，而不是自动售货机。",
-        },
-        {
-          en: "Show, don't just tell, through high-quality examples.",
-          cn: "别只下指令，要用高质量示例“做给它看”。",
-        },
+        { en: "Treat the model like a collaborator, not a vending machine.", cn: "把模型当合作伙伴，而不是自动售货机。" },
+        { en: "Show, don't just tell, through high-quality examples.", cn: "别只下指令，要用高质量示例“做给它看”。" },
       ],
       reflection: {
         questions: [
@@ -283,66 +218,109 @@
           "你现在在用的提示里，有没有可以改写成“人工社交对话”的地方？",
         ],
         finalNote: {
-          en:
-            "The real leverage is not in writing clever prompts once, but in building a small, reusable library of examples that encode how *you* think.",
-          cn:
-            "真正的杠杆不在于偶尔写出一个绝妙提示词，而在于沉淀一小套可复用的示例库，把“你的思维方式”固化进去。",
+          en: "The real leverage is not in writing clever prompts once, but in building a small, reusable library of examples that encode how *you* think.",
+          cn: "真正的杠杆不在于偶尔写出一个绝妙提示词，而在于沉淀一小套可复用的示例库，把“你的思维方式”固化进去。",
         },
       },
     };
 
     const SAMPLE_DETAIL_CN = {
-      overview:
-        "这期内容围绕“提示工程是否过时”展开，从提问方式、示例设计到结构化输出，给出了一套在大模型时代依然有效的实用框架。看完后，你应该能改写自己常用的 2–3 条 Prompt，并开始沉淀一个小型示例库。",
+      overview: "这期内容围绕“提示工程是否过时”展开，从提问方式、示例设计到结构化输出，给出了一套在大模型时代依然有效的实用框架。看完后，你应该能改写自己常用的 2–3 条 Prompt，并开始沉淀一个小型示例库。",
       timeline: [
-        {
-          time: "00:00",
-          text: "提出核心问题：大模型时代，提示工程是否已经过时？",
-        },
-        {
-          time: "06:24",
-          text: "给出新视角：提示工程 = 人工社交智能，关键在于“如何和模型说话”。",
-        },
-        {
-          time: "12:24",
-          text: "通过案例说明 Few-shot 为什么能显著提升复杂任务的稳定性和准确率。",
-        },
-        {
-          time: "25:03",
-          text: "总结一套通用框架：任务拆解 + 自我校对，作为日常写 Prompt 的基础套路。",
-        },
+        { time: "00:00", text: "提出核心问题：大模型时代，提示工程是否已经过时？" },
+        { time: "06:24", text: "给出新视角：提示工程 = 人工社交智能，关键在于“如何和模型说话”。" },
+        { time: "12:24", text: "通过案例说明 Few-shot 为什么能显著提升复杂任务的稳定性和准确率。" },
+        { time: "25:03", text: "总结一套通用框架：任务拆解 + 自我校对，作为日常写 Prompt 的基础套路。" },
       ],
       keyConcepts: [
-        {
-          title: "人工社交智能",
-          desc:
-            "与其说是在“写提示”，不如说是在练习如何与一个强大但有偏好的合作者对话。",
-        },
-        {
-          title: "示例优先于规则",
-          desc:
-            "很多任务是“说不清但看得懂”的，用示范样本往往比罗列规则更有效。",
-        },
-        {
-          title: "结构化输出",
-          desc:
-            "用 JSON / 列表等结构，既方便机器解析，也方便你后续复用和拼装。",
-        },
+        { title: "人工社交智能", desc: "与其说是在“写提示”，不如说是在练习如何与一个强大但有偏好的合作者对话。" },
+        { title: "示例优先于规则", desc: "很多任务是“说不清但看得懂”的，用示范样本往往比罗列规则更有效。" },
+        { title: "结构化输出", desc: "用 JSON / 列表等结构，既方便机器解析，也方便你后续复用和拼装。" },
       ],
       summaryBullets: [
         "提示工程没有消失，而是进化成一套“沟通范式”：你如何提问，决定了模型如何“思考”。",
         "少样本示例是当前大模型下最稳、最实用的性能放大器，适合复杂判断类任务。",
         "一套可复用的 Prompt + 示例库，是你个人工作流里的“生产力资产”，值得花时间打磨。",
       ],
-      closing:
-        "如果这期视频你只能带走一个改变：从今天开始，把你写得最满意的 3–5 个 Prompt 和对应示例单独存起来，作为个人 Prompt Library 的起点。后续所有复杂任务，先翻一翻这套库，再决定怎么问模型。",
+      closing: "如果这期视频你只能带走一个改变：从今天开始，把你写得最满意的 3–5 个 Prompt 和对应示例单独存起来，作为个人 Prompt Library 的起点。后续所有复杂任务，先翻一翻这套库，再决定怎么问模型。",
     };
 
     // ============================================
-    // ==== 分享卡片相关组件 ====
+    // ==== 组件库 ====
     // ============================================
+
+    // --- 订阅 Modal ---
+    const SubscriptionModal = ({ isOpen, onClose, mySubs, onSubscribe }) => {
+        const [search, setSearch] = useState("");
+        if (!isOpen) return null;
+        const filteredList = RECOMMENDED_CHANNELS.filter(c =>
+            c.name.toLowerCase().includes(search.toLowerCase())
+        );
+        return (
+            <div className="fixed inset-0 z-[60] flex items-center justify-center px-4 animate-in">
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose}></div>
+                <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl relative z-10 overflow-hidden">
+                    <div className="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <h3 className="font-bold text-lg text-slate-800">发现新博主</h3>
+                        <button
+                            onClick={onClose}
+                            className="text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-100 transition"
+                        >
+                            <Icons.X className="w-5 h-5" />
+                        </button>
+                    </div>
+                    <div className="p-5 pb-0">
+                        <div className="relative">
+                            <div className="absolute left-3 top-3 text-slate-400">
+                                <Icons.Search className="w-5 h-5" />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="搜索频道名称..."
+                                className="w-full bg-slate-100 border-none rounded-xl py-3 pl-10 pr-4 outline-none focus:ring-2 focus:ring-indigo-500/20 text-slate-800"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <div className="p-5 h-[300px] overflow-y-auto">
+                        <div className="space-y-3">
+                            {filteredList.map(channel => {
+                                const isSubbed = mySubs.some(s => s.id === channel.id);
+                                return (
+                                    <div
+                                        key={channel.id}
+                                        className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <img src={channel.avatar} className="w-10 h-10 rounded-full" />
+                                            <div>
+                                                <h4 className="font-bold text-slate-800 text-sm">{channel.name}</h4>
+                                                <p className="text-xs text-slate-500">{channel.desc}</p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => onSubscribe(channel)}
+                                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition ${
+                                                isSubbed
+                                                    ? 'bg-slate-100 text-slate-400 cursor-default'
+                                                    : 'bg-black text-white hover:bg-slate-800'
+                                            }`}
+                                            disabled={isSubbed}
+                                        >
+                                            {isSubbed ? '已订阅' : '订阅'}
+                                        </button>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
     
-    // 1. 深度笔记卡组件
+    // --- 1. 深度笔记卡组件 ---
     function NotesCard({ data }) {
       return (
         <div className="w-[375px] bg-white text-slate-900 shadow-2xl relative overflow-hidden flex flex-col font-sans" style={{aspectRatio: '9/16'}}>
@@ -401,7 +379,7 @@
       );
     }
 
-    // 2. 金句海报卡组件
+    // --- 2. 金句海报卡组件 ---
     function QuoteCard({ data }) {
       return (
         <div className="w-[375px] bg-slate-900 text-white shadow-2xl relative overflow-hidden flex flex-col font-sans" style={{aspectRatio: '9/16'}}>
@@ -452,7 +430,7 @@
       );
     }
 
-    // 3. 分享模态框组件
+    // --- 3. 分享模态框组件 ---
     function ShareModal({ onClose, data }) {
       const [cardType, setCardType] = useState('notes'); // 'notes' | 'quote'
       const [isGenerating, setIsGenerating] = useState(true);
@@ -528,6 +506,169 @@
         </div>
       );
     }
+
+    // --- 4. 个人中心页面组件 ---
+    const ProfilePage = ({ onGoToDetail, data, mySubs, onSubscribe, onUnsubscribe }) => {
+        const [activeTab, setActiveTab] = useState('history');
+        const [isModalOpen, setIsModalOpen] = useState(false);
+
+        return (
+            <div className="max-w-5xl mx-auto px-4 md:px-8 py-8 fade-in">
+                <SubscriptionModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    mySubs={mySubs}
+                    onSubscribe={onSubscribe}
+                />
+
+                <div className="flex items-center gap-6 mb-10 p-6 bg-white rounded-2xl shadow-sm border border-slate-100">
+                    <div className="w-20 h-20 rounded-full bg-slate-200 shrink-0 border-2 border-white shadow-md overflow-hidden">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" className="w-full h-full" />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-bold text-slate-800 mb-1">{data.user.name}</h1>
+                        <p className="text-slate-500 text-sm mb-3">
+                            终身学习者 • 已坚持学习 {data.user.days} 天
+                        </p>
+                        <div className="flex gap-2">
+                            <span className="text-xs font-bold bg-indigo-50 text-indigo-700 px-2 py-1 rounded border border-indigo-100">
+                                PRO 会员
+                            </span>
+                            <span className="text-xs font-bold bg-slate-100 text-slate-600 px-2 py-1 rounded border border-slate-200">
+                                {data.user.notes_count} 条笔记
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex border-b border-slate-200 mb-6 overflow-x-auto">
+                    {[
+                        { id: 'history', label: '学习记录', icon: Icons.History },
+                        { id: 'subs', label: '我的订阅', icon: Icons.Bell },
+                        { id: 'notes', label: '我的笔记', icon: Icons.PenTool }
+                    ].map(tab => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`px-6 py-3 text-sm font-medium flex items-center gap-2 transition-all relative whitespace-nowrap ${
+                                activeTab === tab.id ? 'text-indigo-600' : 'text-slate-500 hover:text-slate-700'
+                            }`}
+                        >
+                            <tab.icon className="w-4 h-4" />
+                            {tab.label}
+                            {activeTab === tab.id && (
+                                <div className="absolute bottom-0 left-0 w-full h-0.5 bg-indigo-600 rounded-t-full"></div>
+                            )}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="min-h-[400px] slide-up">
+                    {activeTab === 'history' && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                            {data.history.map(item => (
+                                <div
+                                    key={item.id}
+                                    onClick={() => onGoToDetail(item)}
+                                    className="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition cursor-pointer overflow-hidden group"
+                                >
+                                    <div className="aspect-video bg-slate-100 relative">
+                                        <img src={item.cover} className="w-full h-full object-cover" />
+                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition flex items-center justify-center">
+                                            <Icons.Play className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition transform scale-90 group-hover:scale-100" />
+                                        </div>
+                                    </div>
+                                    <div className="p-4">
+                                        <h4 className="font-bold text-slate-800 line-clamp-1 mb-1 group-hover:text-indigo-600 transition">
+                                            {item.title}
+                                        </h4>
+                                        <div className="flex justify-between text-xs text-slate-500">
+                                            <span>{item.author}</span>
+                                            <span>{item.date}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {activeTab === 'subs' && (
+                        <div>
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="font-bold text-slate-700">
+                                    已订阅频道 ({mySubs.length})
+                                </h3>
+                                <button
+                                    onClick={() => setIsModalOpen(true)}
+                                    className="flex items-center gap-1 text-xs font-bold bg-black text-white px-3 py-1.5 rounded-full hover:bg-slate-800 transition shadow-lg shadow-slate-200"
+                                >
+                                    <Icons.Plus className="w-3 h-3" /> 添加订阅
+                                </button>
+                            </div>
+                            <div className="bg-white rounded-xl border border-slate-200 shadow-sm divide-y divide-slate-100">
+                                {mySubs.map(sub => (
+                                    <div
+                                        key={sub.id}
+                                        className="p-4 flex items-center justify-between hover:bg-slate-50 transition"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <img
+                                                src={sub.avatar}
+                                                className="w-12 h-12 rounded-full border border-slate-100"
+                                            />
+                                            <div>
+                                                <h4 className="font-bold text-slate-800">
+                                                    {sub.name}
+                                                </h4>
+                                                <p className="text-xs text-slate-500">
+                                                    {sub.desc}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => onUnsubscribe(sub.id)}
+                                            className="text-xs text-slate-400 hover:text-red-500 border border-slate-200 hover:border-red-200 px-3 py-1.5 rounded transition flex items-center gap-1"
+                                        >
+                                            退订
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'notes' && (
+                        <div className="space-y-4">
+                            {data.notes.map(note => (
+                                <div
+                                    key={note.id}
+                                    className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 hover:border-indigo-200 transition cursor-pointer"
+                                    onClick={() => onGoToDetail({ title: note.video, author: "Unknown", cover: "https://picsum.photos/seed/ai2025/600/400" })} // Mock data for nav
+                                >
+                                    <div className="flex justify-between items-start mb-3">
+                                        <div>
+                                            <h4 className="font-bold text-slate-800 text-lg">
+                                                {note.title}
+                                            </h4>
+                                            <p className="text-xs text-indigo-600 flex items-center gap-1 mt-1">
+                                                <Icons.Play className="w-3 h-3" /> 源视频: {note.video}
+                                            </p>
+                                        </div>
+                                        <span className="text-xs text-slate-400 bg-slate-50 px-2 py-1 rounded">
+                                            {note.date}
+                                        </span>
+                                    </div>
+                                    <div className="bg-slate-50 p-3 rounded-lg text-sm text-slate-600 font-mono leading-relaxed">
+                                        {note.snippet}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    };
 
     // 组件：推文卡片
     function TweetCard({ data }) {
@@ -610,11 +751,14 @@
       );
     }
 
-    // 组件：顶部导航
-    function Header() {
+    // 组件：顶部导航 (增加 onViewChange 支持)
+    function Header({ onViewChange }) {
       return (
         <nav className="h-16 bg-white border-b border-slate-200 sticky top-0 z-50 px-4 md:px-8 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-slate-800 cursor-pointer group">
+          <div 
+            className="flex items-center gap-2 text-slate-800 cursor-pointer group"
+            onClick={() => onViewChange('home')}
+          >
             <div className="bg-indigo-600 text-white p-1.5 rounded-lg group-hover:scale-105 transition">
               <Icons.Play className="w-5 h-5" />
             </div>
@@ -627,8 +771,12 @@
           </div>
           <div className="flex items-center gap-4">
              <button className="text-xs font-bold text-slate-500 hover:text-indigo-600 hidden md:block">如何定制信息源？</button>
-             <div className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition cursor-pointer">
-               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+             {/* 这里的头像现在可以点击跳转到个人中心 */}
+             <div 
+                className="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 hover:bg-indigo-50 hover:text-indigo-600 transition cursor-pointer overflow-hidden border border-slate-200"
+                onClick={() => onViewChange('profile')}
+             >
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="User" />
              </div>
           </div>
         </nav>
@@ -640,11 +788,17 @@
       const [url, setUrl] = useState("");
       const [error, setError] = useState("");
       const [showAllTweets, setShowAllTweets] = useState(false);
-      const [view, setView] = useState("home"); // home | detail
+      const [view, setView] = useState("home"); // home | detail | profile
       const [selectedVideo, setSelectedVideo] = useState(null);
       const [detailTab, setDetailTab] = useState("cn"); // cn | pro
       const [showShareModal, setShowShareModal] = useState(false);
       const [notionStatus, setNotionStatus] = useState('idle'); // idle | loading | success
+      
+      // 状态：我的订阅 (Lifted state so it persists between views)
+      const [mySubs, setMySubs] = useState(SAMPLE_USER_DATA.default_subscriptions);
+
+      const handleSubscribe = (channel) => setMySubs([...mySubs, channel]);
+      const handleUnsubscribe = (id) => setMySubs(mySubs.filter(s => s.id !== id));
 
       const handleSubmit = () => {
         if (!url.trim()) {
@@ -652,7 +806,14 @@
           return;
         }
         setError("");
-        alert("预览模式：这里会根据链接生成学习卡并进入详情页");
+        // 模拟
+        const mockItem = {
+             title: "Preview Video from Link",
+             author: "Unknown Author",
+             cover: "https://picsum.photos/seed/temp/600/400",
+             duration: "00:00"
+        }
+        handleVideoClick(mockItem);
       };
 
       const handleVideoClick = (item) => {
@@ -660,6 +821,12 @@
         setDetailTab("cn");
         setView("detail");
       };
+      
+      const handleGoToDetailFromProfile = (item) => {
+          setSelectedVideo(item); // 简单处理，实际应根据ID拉取数据
+          setDetailTab("cn");
+          setView("detail");
+      }
 
       // 模拟导出到 Notion (复制 Markdown)
       const handleExportNotion = () => {
@@ -720,8 +887,8 @@ ${pro.reflection.finalNote.cn}
         const cnSimple = SAMPLE_DETAIL_CN;
 
         return (
-          <div className="min-h-screen flex flex-col bg-slate-50 relative">
-            <Header />
+          <div className="min-h-screen flex flex-col bg-slate-50 relative fade-in">
+            <Header onViewChange={setView} />
             {/* 分享模态框挂载点 */}
             {showShareModal && (
               <ShareModal 
@@ -874,7 +1041,7 @@ ${pro.reflection.finalNote.cn}
                 </div>
 
                 {detailTab === "pro" ? (
-                  <div className="space-y-6">
+                  <div className="space-y-6 fade-in">
                     {/* Overview */}
                     <section className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
                       <h3 className="font-bold text-slate-800 text-sm mb-2">
@@ -1039,7 +1206,7 @@ ${pro.reflection.finalNote.cn}
                     </section>
                   </div>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-6 fade-in">
                     {/* CN overview */}
                     <section className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
                       <h3 className="font-bold text-slate-800 text-sm mb-2">
@@ -1125,11 +1292,36 @@ ${pro.reflection.finalNote.cn}
         );
       }
 
+      // ==== 个人中心渲染 ====
+      if (view === "profile") {
+          return (
+              <div className="min-h-screen flex flex-col bg-slate-50">
+                  <Header onViewChange={setView} />
+                  <main className="flex-1">
+                    <ProfilePage 
+                        data={SAMPLE_USER_DATA} 
+                        mySubs={mySubs} 
+                        onGoToDetail={handleGoToDetailFromProfile}
+                        onSubscribe={handleSubscribe}
+                        onUnsubscribe={handleUnsubscribe}
+                    />
+                  </main>
+                  <footer className="py-4 px-4 md:px-8 border-t border-slate-200 bg-white mt-4">
+                    <div className="max-w-7xl mx-auto text-center">
+                        <p className="text-sm text-slate-500">
+                        YouTube & X Assist · 硅谷 AI 一手资讯助手（大脾气和大脑袋联合出品）
+                        </p>
+                    </div>
+                  </footer>
+              </div>
+          )
+      }
+
       // ==== 首页渲染 ====
       return (
         <div className="min-h-screen flex flex-col bg-slate-50">
-          <Header />
-          <main className="flex-1">
+          <Header onViewChange={setView} />
+          <main className="flex-1 fade-in">
             <div className="max-w-7xl mx-auto px-4 pt-10 pb-12">
               <div className="text-center mb-10 max-w-4xl mx-auto">
                 <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-5 tracking-tight">
@@ -1142,7 +1334,7 @@ ${pro.reflection.finalNote.cn}
                   没时间看长视频？不知道关注谁？我们为你自动追踪权威动态，提供<span className="font-bold text-slate-700">原文精炼与高质量翻译</span>，支持定制信息源，不仅是资讯工具<span className="font-bold text-slate-700">更是你的双语认知提升助手</span>。
                 </p>
 
-                {/* 功能矩阵 - 4点布局 (文案已恢复原版) */}
+                {/* 功能矩阵 - 4点布局 */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8 text-left">
                   <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:shadow-md transition group">
                     <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3 group-hover:bg-indigo-600 group-hover:text-white transition">
